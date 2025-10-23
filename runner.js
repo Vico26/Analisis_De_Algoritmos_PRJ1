@@ -7,24 +7,7 @@ import { neighbors } from './moves.js';
 import { astar, bfs, makeProblem, heuristic } from './search.js';
 import { renderBlocksWithHeads } from './matrix_viewer.js';
 import { backtrack } from './backtracking.js'; 
-
-// === 1) Tu matriz (puedes cambiarla aquí) ===
-const TEXT = `- - > . . . . .
-. . . . | - - >
-. . . . | . . .
-. - - B | . . .
-. . . . v . - >
-. . . . . . . .
-- - - > . . . .
-. . . . . . . .`;
-
-// === 2) Utils ===
-function inferExitFromTarget(s){
-  const t = s.vehicles.find(v => v.id === s.targetId);
-  if (!t) throw new Error('No hay vehículo objetivo B.');
-  if (t.orient === 'H') return [s.cols - 1, t.row];     // borde derecho
-  return [t.col, s.rows - 1];                           // borde inferior
-}
+import { dfs } from './dfs.js';
 
 // Render helpers
 const matrixEl = document.getElementById('matrix');
@@ -33,7 +16,28 @@ const statusEl = document.getElementById('status');
 const movesListEl = document.getElementById('movesList');
 const solveAStarBtn = document.getElementById('solveAStar');
 const solveBFSBtn = document.getElementById('solveBFS');
+const solveDFSBtn = document.getElementById('solveDFS');
 const solveBTBtn = document.getElementById('solveBT');
+const updateBoardBtn = document.getElementById('updateBoard');
+const resetBoardBtn = document.getElementById('resetBoard');
+const matrixInput = document.getElementById('matrixInput');
+const exitXInput = document.getElementById('exitX');
+const exitYInput = document.getElementById('exitY');
+
+// Estado global
+let currentState = null;
+let currentProblem = null;
+
+// Valores por defecto
+const DEFAULT_MATRIX = `- - - - > . .
+. . . . . . .
+| . . - - - >
+| . . . . . .
+v . - - - B .
+. . . . . . .
+- - - - > . .`;
+const DEFAULT_EXIT_X = 6;
+const DEFAULT_EXIT_Y = 5;
 
 function setStatus(msg){ if(statusEl) statusEl.textContent = msg; }
 function clearMoves(){ if(movesListEl) movesListEl.innerHTML = ''; }
@@ -98,46 +102,99 @@ function stateToText(s){
   return grid.map(r=>r.join(' ')).join('\n');
 }
 
-// Función para resolver y animar
-async function solveAndAnimate(useAlgorithm) {
+// Función para resetear todo
+function resetBoard() {
+  // Restaurar valores por defecto
+  matrixInput.value = DEFAULT_MATRIX;
+  exitXInput.value = DEFAULT_EXIT_X;
+  exitYInput.value = DEFAULT_EXIT_Y;
+  
+  // Limpiar estado
+  currentState = null;
+  currentProblem = null;
+  
+  // Limpiar interfaz
+  clearMoves();
+  matrixEl.innerHTML = '';
+  preEl.textContent = '(aquí se mostrará tu matriz)';
+  setStatus('🔄 Tablero reseteado. Listo para ingresar nueva configuración.');
+}
+
+// Función para actualizar el tablero desde los inputs
+function updateBoardFromInputs() {
   try {
-    clearMoves();
-    setStatus(`Resolviendo con ${useAlgorithm}...`);
-    
-    // Pequeño delay para que se vea el mensaje "Resolviendo..."
-    await new Promise(resolve => setTimeout(resolve, 100));
-    
-    const { rows, cols, vehicles, targetId } = parseGrid(TEXT);
-    let initialState = new State(rows, cols, [0,0], vehicles, targetId);
-    initialState.exit = inferExitFromTarget(initialState);
-    validateState(initialState);
+    const matrixText = matrixInput.value.trim();
+    const exitX = parseInt(exitXInput.value);
+    const exitY = parseInt(exitYInput.value);
 
-    // Pintar inicial
-    renderBlocksWithHeads(TEXT, matrixEl);
-    setStatus(`Resolviendo...`);
+    if (!matrixText) {
+      setStatus('❌ Ingresa una matriz válida.');
+      return;
+    }
 
-    const problem = makeProblem({
-      initial: initialState,
+    if (isNaN(exitX) || isNaN(exitY) || exitX < 1 || exitY < 1) {
+      setStatus('❌ Ingresa coordenadas de salida válidas (1-index).');
+      return;
+    }
+
+    const { rows, cols, vehicles, targetId } = parseGrid(matrixText);
+    
+    // Configurar salida personalizada (convertir de 1-index a 0-index)
+    currentState = new State(
+      rows, 
+      cols, 
+      [exitX - 1, exitY - 1],
+      vehicles, 
+      targetId
+    );
+    
+    validateState(currentState);
+
+    currentProblem = makeProblem({
+      initial: currentState,
       isGoal,
       neighbors,
       hash: hashState
     });
 
-    // Seleccionar algoritmo
+    // Pintar tablero
+    renderBlocksWithHeads(matrixText, matrixEl);
+    preEl.textContent = matrixText;
+    setStatus(`✅ Tablero actualizado. Salida: (${exitX},${exitY}). Listo para resolver.`);
+
+  } catch (error) {
+    setStatus(`❌ Error: ${error.message}`);
+    console.error('Error al actualizar tablero:', error);
+  }
+}
+
+// Función para resolver y animar
+async function solveAndAnimate(useAlgorithm) {
+  try {
+    if (!currentProblem || !currentState) {
+      setStatus('❌ Primero actualiza el tablero con una matriz válida.');
+      return;
+    }
+
+    clearMoves();
+    setStatus(`Resolviendo con ${useAlgorithm}...`);
+    
+    await new Promise(resolve => setTimeout(resolve, 100));
+
     let result;
     if (useAlgorithm === 'bfs') {
-      result = bfs(problem);
+      result = bfs(currentProblem);
+    } else if (useAlgorithm === 'dfs') {
+      result = dfs(currentProblem);
     } else if (useAlgorithm === 'backtracking') {
-      result = backtrack(problem);
+      result = backtrack(currentProblem);
     } else {
-      result = astar(problem, heuristic);
+      result = astar(currentProblem, heuristic);
     }
 
     if (!result.ok) {
       setStatus('❌ Sin solución encontrada.');
-      // Mostrar métricas incluso si falla
       if (result.metrics) {
-        console.log('Métricas:', result.metrics);
         setStatus(`❌ Sin solución. Tiempo: ${result.metrics.time.toFixed(2)}ms, Estados: ${result.metrics.statesExplored}`);
       }
       return;
@@ -162,7 +219,7 @@ async function solveAndAnimate(useAlgorithm) {
     setStatus(metricsText);
 
     // Mostrar todos los movimientos con descripciones claras
-    displayAllMoves(result.moves, initialState);
+    displayAllMoves(result.moves, currentState);
 
     // Animar
     const pathStates = result.states;
@@ -170,8 +227,8 @@ async function solveAndAnimate(useAlgorithm) {
     
     const tick = () => {
       if (currentStep <= pathStates.length) {
-        const currentState = currentStep === 0 ? initialState : pathStates[currentStep - 1];
-        const txt = stateToText(currentState);
+        const animState = currentStep === 0 ? currentState : pathStates[currentStep - 1];
+        const txt = stateToText(animState);
         renderBlocksWithHeads(txt, matrixEl);
         preEl.textContent = txt;
         
@@ -179,17 +236,14 @@ async function solveAndAnimate(useAlgorithm) {
         const moveItems = movesListEl.querySelectorAll('li');
         moveItems.forEach((item, idx) => {
           if (idx === currentStep - 1) {
-            // Movimiento que se acaba de ejecutar
             item.style.background = '#e3f2fd';
             item.style.fontWeight = 'bold';
             item.style.borderLeft = '4px solid #2196f3';
           } else if (idx === currentStep) {
-            // Próximo movimiento
             item.style.background = '#fff3cd';
             item.style.fontWeight = 'bold';
             item.style.borderLeft = '4px solid #ffc107';
           } else {
-            // Movimientos no activos
             item.style.background = '';
             item.style.fontWeight = 'normal';
             item.style.borderLeft = '4px solid transparent';
@@ -199,13 +253,13 @@ async function solveAndAnimate(useAlgorithm) {
         // Actualizar estado
         if (currentStep > 0) {
           const currentMove = result.moves[currentStep - 1];
-          setStatus(`${metricsText} | Paso ${currentStep}/${result.moves.length}: ${getMoveDescription(currentMove, initialState)}`);
+          setStatus(`${metricsText} | Paso ${currentStep}/${result.moves.length}: ${getMoveDescription(currentMove, currentState)}`);
         } else {
           setStatus(`${metricsText} | 🎯 Inicio - Listo para comenzar`);
         }
         
         currentStep++;
-        setTimeout(tick, 800); // Más lento para ver mejor
+        setTimeout(tick, 800);
       } else {
         setStatus(`${metricsText} | ✅ ¡Completado!`);
         
@@ -227,17 +281,24 @@ async function solveAndAnimate(useAlgorithm) {
 }
 
 // Configurar event listeners
+if (updateBoardBtn) {
+  updateBoardBtn.addEventListener('click', updateBoardFromInputs);
+}
+if (resetBoardBtn) {
+  resetBoardBtn.addEventListener('click', resetBoard);
+}
 if (solveAStarBtn) {
   solveAStarBtn.addEventListener('click', () => solveAndAnimate('astar'));
 }
 if (solveBFSBtn) {
   solveBFSBtn.addEventListener('click', () => solveAndAnimate('bfs'));
 }
+if (solveDFSBtn) {
+  solveDFSBtn.addEventListener('click', () => solveAndAnimate('dfs'));
+}
 if (solveBTBtn) {
   solveBTBtn.addEventListener('click', () => solveAndAnimate('backtracking'));
 }
 
 // Inicialización
-preEl.textContent = TEXT;
-renderBlocksWithHeads(TEXT, matrixEl);
-setStatus('🎮 Listo. Haz clic en "Resolver" para comenzar.');
+resetBoard(); // Iniciar con valores por defecto

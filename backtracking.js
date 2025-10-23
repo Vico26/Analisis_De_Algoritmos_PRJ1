@@ -3,7 +3,7 @@
 
 export function backtrack(problem, opts = {}) {
   const { initial, isGoal, neighbors, hash } = problem;
-  const { maxDepth = 100, timeLimitMs = 10000, order = defaultOrder(problem) } = opts;
+  const { maxDepth = 5000, timeLimitMs = 100000, order = defaultOrder(problem) } = opts;
 
   const startHash = hash(initial);
   const visited = new Set([startHash]);

@@ -27,11 +27,24 @@
 
     /* Panel derecho */
     .side h2 { margin: 0 0 6px; font-size: 14px; }
-    .plain { margin: 0; font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 12px; line-height: 1.35; white-space: pre; }
-    .controls { display:flex; gap:8px; margin:8px 0; }
+    .input-group { margin: 8px 0; }
+    .input-group label { display: block; font-size: 12px; font-weight: 600; margin-bottom: 4px; }
+    .input-group textarea, .input-group input { width: 100%; padding: 6px; border: 1px solid #e5e7eb; border-radius: 6px; font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 12px; }
+    .input-group textarea { height: 120px; resize: vertical; }
+    .input-group .coords { display: flex; gap: 8px; }
+    .input-group .coords input { flex: 1; }
+    
+    .plain { margin: 0; font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 12px; line-height: 1.35; white-space: pre; background: #f8f9fa; padding: 8px; border-radius: 6px; border: 1px solid #e5e7eb; }
+    .controls { display:flex; gap:8px; margin:8px 0; flex-wrap: wrap; }
     .btn { appearance:none; border:1px solid #e5e7eb; background:#fff; border-radius:8px; padding:6px 10px; font-weight:600; cursor:pointer; }
     .btn:hover { background:#f9fafb; }
     .btn:active { background:#e5e7eb; }
+    .btn.primary { background:#007bff; color:white; }
+    .btn.primary:hover { background:#0056b3; }
+    .btn.secondary { background:#6c757d; color:white; }
+    .btn.secondary:hover { background:#545b62; }
+    .btn.success { background:#28a745; color:white; }
+    .btn.success:hover { background:#1e7e34; }
     .status { font-size:12px; color:#666; margin:6px 0 10px; min-height: 20px; font-weight: 500; background: #f8f9fa; padding: 8px; border-radius: 6px; border-left: 4px solid #007bff; }
 
     /* Movimientos */
@@ -60,15 +73,56 @@
 
     <!-- Derecha: panel -->
     <div class="side">
-      <h2>Matriz ingresada</h2>
-      <pre id="inputText" class="plain">(aquí se mostrará tu matriz)</pre>
+      <h2>Configuración del Tablero</h2>
+      
+      <div class="input-group">
+        <label for="matrixInput">Matriz (usa . para vacío, -| para cuerpos, >v para cabezas, B para objetivo):</label>
+        <textarea id="matrixInput" placeholder="- - - - > . .
+. . . . . . .
+| . . - - - >
+| . . . . . .
+v . - - - B .
+. . . . . . .
+- - - - > . .">- - - - > . .
+. . . . . . .
+| . . - - - >
+| . . . . . .
+v . - - - B .
+. . . . . . .
+- - - - > . .</textarea>
+      </div>
+
+      <div class="input-group">
+        <label for="exitX">Posición de Salida (1-index):</label>
+        <div class="coords">
+          <div>
+            <label for="exitX">X (columna):</label>
+            <input type="number" id="exitX" value="6" min="1" max="12">
+          </div>
+          <div>
+            <label for="exitY">Y (fila):</label>
+            <input type="number" id="exitY" value="5" min="1" max="12">
+          </div>
+        </div>
+      </div>
 
       <div class="controls">
-        <button id="solveAStar" class="btn">Resolver (A*)</button>
-        <button id="solveBFS" class="btn">Resolver (BFS)</button>
-        <button id="solveBT" class="btn">Resolver (Backtracking)</button>
+        <button id="updateBoard" class="btn primary">Actualizar Tablero</button>
+        <button id="resetBoard" class="btn secondary">Reset</button>
       </div>
-      <div id="status" class="status">🎮 Listo. Haz clic en "Resolver" para comenzar.</div>
+
+      <div class="input-group">
+        <label>Vista previa de la matriz:</label>
+        <pre id="inputText" class="plain">(aquí se mostrará tu matriz)</pre>
+      </div>
+
+      <div class="controls">
+        <button id="solveAStar" class="btn success">Resolver (A*)</button>
+        <button id="solveBFS" class="btn success">Resolver (BFS)</button>
+        <button id="solveDFS" class="btn success">Resolver (DFS)</button>
+        <button id="solveBT" class="btn success">Resolver (Backtracking)</button>
+      </div>
+      <div id="status" class="status">🎮 Ingresa una matriz y haz clic en "Actualizar Tablero" para comenzar.</div>
 
       <div class="movesBox">
         <h3>Movimientos</h3>
@@ -85,6 +139,7 @@
   <script type="module" src="./moves.js"></script>
   <script type="module" src="./search.js"></script>
   <script type="module" src="./backtracking.js"></script>
+  <script type="module" src="./dfs.js"></script>
   <script type="module" src="./runner.js"></script>
 </body>
 </html>
