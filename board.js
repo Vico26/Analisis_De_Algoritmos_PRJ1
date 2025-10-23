@@ -1,5 +1,5 @@
 // /board.js
-// Todo lo del tablero (en un solo archivo, como pediste).
+// Todo lo del tablero
 
 export const MAX_ROWS = 12;
 export const MAX_COLS = 12;
@@ -13,7 +13,7 @@ export const SYMBOL = Object.freeze({
   TARGET_HEAD: 'B',
 });
 
-/** Estado del juego (fuente de verdad). exit = [x,y] en 0-index internamente */
+/** Estado del juego. exit = [x,y] en 0-index internamente */
 export class State {
   constructor(rows, cols, exit, vehicles, targetId) {
     this.rows = rows;
@@ -24,7 +24,7 @@ export class State {
   }
 }
 
-/** Lanza si viola 12×12, límites, solapes o salida inválida */
+/** bota si se pasa de 12×12, límites, solapes o salida inválida */
 export function validateState(s) {
   if (!Number.isInteger(s.rows) || !Number.isInteger(s.cols)) throw new Error('Tamaño inválido.');
   if (s.rows < 1 || s.cols < 1) throw new Error('El tablero debe tener al menos 1×1.');
@@ -70,7 +70,7 @@ export function occupancy(s) {
   return g;
 }
 
-/** ¿Meta alcanzada? Frente del objetivo coincide con la salida */
+/** ¿Se logro? Frente del objetivo coincide con la salida */
 export function isGoal(s) {
   const t = s.vehicles.find(v => v.id === s.targetId);
   if (!t) return false;

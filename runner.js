@@ -71,7 +71,7 @@ function displayAllMoves(moves, initialState) {
   });
 }
 
-// Función auxiliar para aplicar movimiento (similar a applyMove de moves.js)
+// Función auxiliar para aplicar movimiento
 function applyMoveToState(state, move) {
   const newVehicles = state.vehicles.map(v => {
     if (v.id === move.vehicleId) {
@@ -128,12 +128,12 @@ function updateBoardFromInputs() {
     const exitY = parseInt(exitYInput.value);
 
     if (!matrixText) {
-      setStatus('❌ Ingresa una matriz válida.');
+      setStatus('Ingresa una matriz válida.');
       return;
     }
 
     if (isNaN(exitX) || isNaN(exitY) || exitX < 1 || exitY < 1) {
-      setStatus('❌ Ingresa coordenadas de salida válidas (1-index).');
+      setStatus('Ingresa coordenadas de salida válidas (1-index).');
       return;
     }
 
@@ -163,7 +163,7 @@ function updateBoardFromInputs() {
     setStatus(`✅ Tablero actualizado. Salida: (${exitX},${exitY}). Listo para resolver.`);
 
   } catch (error) {
-    setStatus(`❌ Error: ${error.message}`);
+    setStatus(`Error: ${error.message}`);
     console.error('Error al actualizar tablero:', error);
   }
 }
@@ -172,7 +172,7 @@ function updateBoardFromInputs() {
 async function solveAndAnimate(useAlgorithm) {
   try {
     if (!currentProblem || !currentState) {
-      setStatus('❌ Primero actualiza el tablero con una matriz válida.');
+      setStatus('Primero actualiza el tablero con una matriz válida.');
       return;
     }
 
@@ -193,19 +193,19 @@ async function solveAndAnimate(useAlgorithm) {
     }
 
     if (!result.ok) {
-      setStatus('❌ Sin solución encontrada.');
+      setStatus('Sin solución encontrada.');
       if (result.metrics) {
-        setStatus(`❌ Sin solución. Tiempo: ${result.metrics.time.toFixed(2)}ms, Estados: ${result.metrics.statesExplored}`);
+        setStatus(`Sin solución. Tiempo: ${result.metrics.time.toFixed(2)}ms, Estados: ${result.metrics.statesExplored}`);
       }
       return;
     }
 
-    console.log(`✅ OK: ${result.moves.length} movimientos`);
+    console.log(`OK: ${result.moves.length} movimientos`);
     console.log('Métricas:', result.metrics);
     
     // Mostrar métricas en el status
     const metrics = result.metrics;
-    let metricsText = `✅ ${metrics.moves} movimientos | `;
+    let metricsText = `${metrics.moves} movimientos | `;
     metricsText += `Tiempo: ${metrics.time.toFixed(2)}ms | `;
     metricsText += `Estados: ${metrics.statesExplored}`;
     
@@ -255,13 +255,13 @@ async function solveAndAnimate(useAlgorithm) {
           const currentMove = result.moves[currentStep - 1];
           setStatus(`${metricsText} | Paso ${currentStep}/${result.moves.length}: ${getMoveDescription(currentMove, currentState)}`);
         } else {
-          setStatus(`${metricsText} | 🎯 Inicio - Listo para comenzar`);
+          setStatus(`${metricsText} | Inicio - Listo para comenzar`);
         }
         
         currentStep++;
         setTimeout(tick, 800);
       } else {
-        setStatus(`${metricsText} | ✅ ¡Completado!`);
+        setStatus(`${metricsText} | ¡Completado!`);
         
         // Resaltar final
         const moveItems = movesListEl.querySelectorAll('li');
@@ -275,7 +275,7 @@ async function solveAndAnimate(useAlgorithm) {
     tick();
     
   } catch (error) {
-    setStatus(`❌ Error: ${error.message}`);
+    setStatus(`Error: ${error.message}`);
     console.error('Error en solveAndAnimate:', error);
   }
 }

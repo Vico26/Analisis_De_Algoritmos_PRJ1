@@ -92,7 +92,7 @@ export function renderBlocksWithHeads(text, mount) {
     if (grid[r].length !== cols) {
       const warn = document.createElement('div');
       warn.style.color = '#b91c1c'; warn.style.marginTop = '8px';
-      warn.textContent = `⚠️ La fila ${r+1} tiene ${grid[r].length} columnas (deberían ser ${cols}).`;
+      warn.textContent = `La fila ${r+1} tiene ${grid[r].length} columnas (deberían ser ${cols}).`;
       mount.appendChild(warn);
     }
     for (let c = 0; c < grid[r].length; c++) {

@@ -1,5 +1,5 @@
 // /backtracking.js
-// DFS Backtracking con poda y 'visited' por hash.
+// DFS Backtracking con poda y 'visitados' por hash.
 
 export function backtrack(problem, opts = {}) {
   const { initial, isGoal, neighbors, hash } = problem;
