@@ -18,7 +18,7 @@ export function renderBlocksWithHeads(text, mount) {
 
   const isH = t => t === '-' || t === '>' || t === 'B';
   const isV = t => t === '|' || t === 'v' || t === 'B';
-  const isOccSym = t => t === '-' || t === '|' || t === '>' || t === 'v' || t === 'B';
+  const isOccSym = t => t === '-' || t === '|' || t === '>' || t === 'v' || t === 'B';//Símbolo de ocupación
 
   const used = Array.from({ length: rows }, () => Array(cols).fill(false));
   const cellMeta = Array.from({ length: rows }, () => Array(cols).fill(null));

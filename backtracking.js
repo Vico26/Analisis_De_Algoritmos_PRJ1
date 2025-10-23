@@ -49,11 +49,11 @@ export function backtrack(problem, opts = {}) {
     };
   }
 
-  const path = reconstructPath(parents, startHash, goalHash);
+  const path = reconstructPath(parents, startHash, goalHash);//Construye el camino desde los padres
   return { 
     ok: true, 
     ...path, 
-    goal: path.states.at(-1) || initial,
+    goal: path.states.at(-1) || initial,  
     metrics: {
       time: endTime - t0,
       statesExplored: statesExplored,
@@ -62,7 +62,7 @@ export function backtrack(problem, opts = {}) {
   };
 }
 
-function reconstructPath(parents, startHash, goalHash){
+function reconstructPath(parents, startHash, goalHash){//Reconstruye el camino desde los padres
   const states=[], moves=[];
   let cur=goalHash;
   while(cur!==startHash){

@@ -44,12 +44,12 @@ export function validateState(s) {
       if (v.row < 0 || v.row + v.length - 1 >= s.rows) throw new Error(`Vehículo ${v.id}: sale por filas (y=${v.row+1}..${v.row+v.length}).`);
     }
   }
-  // Solapes (lanza si los hay)
+  // Solapes (bota si los hay)
   occupancy(s);
   return true;
 }
 
-/** Matriz de ocupación: id o -1; lanza en caso de solape */
+/** Matriz de ocupación: id o -1; bota en caso de solape */
 export function occupancy(s) {
   const g = Array.from({ length: s.rows }, () => Array(s.cols).fill(-1));
   for (const v of s.vehicles) {

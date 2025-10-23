@@ -1,5 +1,4 @@
-// /search.js
-// BFS y A* + heurística para Traffic Jam (distancia a salida + bloqueadores).
+// BFS y A* + heurística.
 
 import { isGoal } from './board.js';
 import { neighbors as genNeighbors } from './moves.js';
@@ -26,7 +25,7 @@ class MinPQ {
   _down(i){ const n=this.a.length; for(;;){ let l=i*2+1, r=l+1, s=i; if(l<n && this.a[l].pri<this.a[s].pri) s=l; if(r<n && this.a[r].pri<this.a[s].pri) s=r; if(s===i) break; [this.a[i],this.a[s]]=[this.a[s],this.a[i]]; i=s; } }
 }
 
-/** Reconstruye path a partir de 'parents': { hash -> {prevHash, move, state} } */
+/** Reconstruye path a partir de 'padres': { hash -> {prevHash, move, state} } */
 export function reconstructPath(parents, startHash, goalHash){
   const states=[], moves=[];
   let cur=goalHash;
@@ -52,7 +51,7 @@ export function heuristic(state){
   if (t.orient === 'H') {
     if (ey !== t.row || ex < head.x) return 0;
     const dist = ex - head.x;
-    // bloqueadores únicos en el camino (celdas entre head+1 .. ex)
+    // bloqueadores únicos en el camino 
     const seen = new Set();
     for (let x=head.x+1; x<=ex; x++){
       const id = state.vehicles.find(v =>
@@ -221,10 +220,10 @@ export function astar(problem, h = heuristic){
   };
 }
 
-/** Construye un "problem" a partir de funciones */
+/** Construye un "problema" a partir de funciones */
 export function makeProblem({ initial, isGoal, neighbors, hash }){
   return { initial, isGoal, neighbors, hash };
 }
 
-// Export conveniente
+// Exporta conveniente
 export default { bfs, astar, heuristic, makeProblem, reconstructPath };

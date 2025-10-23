@@ -1,5 +1,4 @@
-// /runner.js
-// Orquesta: parsea tu matriz, infiere salida si falta, resuelve y anima en el viewer.
+// parsea la matriz, infiere salida si falta, resuelve y anima en el viewer.
 
 import { parseGrid } from './parser.js';
 import { State, validateState, isGoal, hashState } from './board.js';
@@ -51,7 +50,7 @@ function getMoveDescription(move, state) {
     (vehicle.orient === 'H' ? 'derecha' : 'abajo') : 
     (vehicle.orient === 'H' ? 'izquierda' : 'arriba');
   
-  return `🚗 Vehículo ${move.vehicleId}: ${direction}`;
+  return `Vehículo ${move.vehicleId}: ${direction}`;
 }
 
 // Función para mostrar todos los movimientos de una vez
@@ -104,16 +103,16 @@ function stateToText(s){
 
 // Función para resetear todo
 function resetBoard() {
-  // Restaurar valores por defecto
+  // Volver a valores default
   matrixInput.value = DEFAULT_MATRIX;
   exitXInput.value = DEFAULT_EXIT_X;
   exitYInput.value = DEFAULT_EXIT_Y;
   
-  // Limpiar estado
+  // Limpia estado
   currentState = null;
   currentProblem = null;
   
-  // Limpiar interfaz
+  // Limpia interfaz
   clearMoves();
   matrixEl.innerHTML = '';
   preEl.textContent = '(aquí se mostrará tu matriz)';
@@ -261,7 +260,7 @@ async function solveAndAnimate(useAlgorithm) {
         currentStep++;
         setTimeout(tick, 800);
       } else {
-        setStatus(`${metricsText} | ¡Completado!`);
+        setStatus(`${metricsText} |¡Completado!`);
         
         // Resaltar final
         const moveItems = movesListEl.querySelectorAll('li');

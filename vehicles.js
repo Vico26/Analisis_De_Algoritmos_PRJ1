@@ -1,5 +1,5 @@
 export class Vehicle {
-  /** orient: 'H' | 'V' */
+  /** orientacion: 'H' | 'V' */
   constructor(id, orient, length, row, col) {
     this.id = id;
     this.orient = orient;   // 'H' | 'V'

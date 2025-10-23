@@ -18,7 +18,7 @@ export function parseExit(str) {
 /**
  * Parsea el grid con símbolos:
  * '.' vacío, '-' cuerpo H, '>' cabeza H derecha, '|' cuerpo V, 'v' cabeza V abajo, 'B' cabeza objetivo.
- * Devuelve { rows, cols, vehicles, targetId } (sin exit).
+ * Devuelve { rows, cols, vehicles, targetId }.
  */
 export function parseGrid(text) {
   if (typeof text !== 'string') throw new Error('Entrada inválida.');
@@ -59,7 +59,7 @@ export function parseGrid(text) {
       // Marcar usadas
       for (let j = 0; j < len; j++) used[r][startCol + j] = true;
 
-      // Construir vehículo (Car o Bus según largo)
+      // Construir vehículo (según largo)
       const id = nextId++;
       const orient = 'H';
       const length = len;

@@ -11,7 +11,7 @@ export function cloneState(s) {
   );
 }
 
-/** Devuelve [minBase, maxBase] para la base del vehículo (col si H, row si V). */
+/** Devuelve [minBase, maxBase](intv) para la base del vehículo (col si H, row si V). */
 export function rangeForVehicle(state, vehicle) {
   const g = occupancy(state);
   const { orient, row, col, length } = vehicle;
