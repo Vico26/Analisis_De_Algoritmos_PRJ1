@@ -116,7 +116,7 @@ function resetBoard() {
   clearMoves();
   matrixEl.innerHTML = '';
   preEl.textContent = '(aquí se mostrará tu matriz)';
-  setStatus('🔄 Tablero reseteado. Listo para ingresar nueva configuración.');
+  setStatus(' Tablero reseteado. Listo para ingresar nueva configuración.');
 }
 
 // Función para actualizar el tablero desde los inputs
@@ -159,7 +159,7 @@ function updateBoardFromInputs() {
     // Pintar tablero
     renderBlocksWithHeads(matrixText, matrixEl);
     preEl.textContent = matrixText;
-    setStatus(`✅ Tablero actualizado. Salida: (${exitX},${exitY}). Listo para resolver.`);
+    setStatus(`Tablero actualizado. Salida: (${exitX},${exitY}). Listo para resolver.`);
 
   } catch (error) {
     setStatus(`Error: ${error.message}`);
